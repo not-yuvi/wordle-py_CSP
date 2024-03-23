@@ -2,49 +2,61 @@ import turtle as trtl
 import string
 import random
 
-
-y_positions = [150, 75, 0, -75, -150]
+centered_coords = []
+typing_list = ["H", "E", "L", "L", "O"]
 
 # turtles
 letter_drawer = trtl.Turtle()
 grid_drawer = trtl.Turtle()
+misc_drawer = trtl.Turtle()
 
 wn = trtl.Screen()
+wn.bgcolor('#404140')
 
 
-letter_drawer.penup()
-for pos in y_positions:
-    letter_drawer.goto(-160, pos)
-    letter_drawer.write('H E L L O', align="left",font=("Consolas", 50, "normal"))
 
 
 # for letter in list(string.ascii_letters()):
 #     wn.onkeypress(lambda: , letter)
 
+def setup_layout():
+    misc_drawer._tracer(False)
+    misc_drawer.fillcolor('#EDF4EE')
+    misc_drawer.penup()
+    misc_drawer.goto(-200, 250)
+    misc_drawer.pendown()
+    misc_drawer.begin_fill()
+    misc_drawer.goto(200, 250)
+    misc_drawer.goto(200, -250)
+    misc_drawer.goto(-200, -250)
+    misc_drawer.goto(-200, 250)
+    misc_drawer.end_fill()
 
 # Gavin
 def draw_grid():
-    grid_drawer._tracer(False)
+    start_x_pos = -185
+    start_y_pos = -150
+    grid_drawer._tracer(True)
+    grid_drawer.speed(8)
     grid_drawer.pensize(5)
-    i = 0
-    for lines in y_positions:
+    for count in range(6):
         grid_drawer.penup()
-        grid_drawer.goto(-175, lines + 75)
-        grid_drawer.pendown()
-        grid_drawer.forward(362.5)
-    
-    grid_drawer.penup()
-    grid_drawer.goto(-175, -150)
-    grid_drawer.pendown()
-    grid_drawer.forward(362.5)
-
-    grid_drawer.right(90)
-    for lines in range(7):
-        grid_drawer.penup()
-        grid_drawer.goto(-175 + i, 225)
+        grid_drawer.goto(start_x_pos, start_y_pos + count * 75)
         grid_drawer.pendown()
         grid_drawer.forward(375)
-        i += 72.5
+        
+        
+        grid_drawer.right(90)
+        grid_drawer.penup()
+        grid_drawer.goto(start_x_pos + count * 75, -start_y_pos + 75)
+        grid_drawer.pendown()
+        grid_drawer.forward(375)
+        grid_drawer.left(90)
+        
+    for x in range(5):
+        for y in range(5):
+            centered_coords.append([start_x_pos + x * 75, start_y_pos + y * 75])
+        
 # Gavin
 def choose_word():
     word_list_file = open("word_list.txt", "r")
@@ -56,9 +68,26 @@ def choose_word():
     return(word)
 
 
-
+setup_layout()
 draw_grid()
 print(choose_word())
+print(centered_coords)
+
+textle = trtl.Turtle()
+textle.shape('square')
+textle.color('yellow')
+textle.shapesize(3)
+textle.penup()
+for coords in centered_coords:
+    textle.goto(coords[0]+37.5, coords[1]+37.5)
+    textle.stamp()
+
+letter_drawer.penup()
+y_coords = centered_coords[0:5]
+for pos in y_coords:
+    letter_drawer.color('#404140')
+    letter_drawer.goto(-165, pos[1])
+    letter_drawer.write(' '.join(typing_list), align="left",font=("Consolas", 52, "bold"))
 
 # keep window open
 wn.mainloop()
