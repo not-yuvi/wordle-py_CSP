@@ -5,9 +5,10 @@ CSP game using turtle
 ## Colors:
 | Where                                  | Color   |
 | -------------------------------------- | ------- |
-| Background:                            | #404140 |
-| Foreground:                            | #EDF4EE |
-| Yellow (right letter, wrong position): | #c9b458 |
-| Green (right letter and position):     | #6aaa64 |
-| Not in word:                           | #404140 |
+| Background:                            | #121213 |
+| Foreground:                            | #818384 |
+| Yellow (right letter, wrong position): | #b59f3b |
+| Green (right letter and position):     | #538d4e |
+| Not in word:                           | #3a3a3c |
+| Blank                                  | #3a3a3c |
 
