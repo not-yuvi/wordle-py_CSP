@@ -29,7 +29,7 @@ colors = {
 
 y_turtles = []
 
-check_finished = False
+check_finished = True
 
 # turtles
 letter_drawer = trtl.Turtle()
@@ -39,12 +39,9 @@ misc_drawer = trtl.Turtle()
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
 
-def StampCheck(color, letter):
+def StampCheck(color, index):
     global tile
-    if color == '1':
-        location = lines[typing_line][typed_list.index(letter)]
-    else:
-        location = lines[typing_line][typed_list_copy.index(letter)]
+    location = lines[typing_line][index]
     location = [location[0]+37.5, location[1]+37.5]
     tile.goto(location)
     if color == '2':
@@ -57,27 +54,34 @@ def StampCheck(color, letter):
     tile.goto(1000, 1000)
     UpdateLine()
 
+
 def CheckLetters():
-    global typing_line, typed_list, typed_list_copy, check_finished
+    global typing_line, typed_list, check_finished
     if len(typing_list) == 5 and check_finished:
         if not CheckIfWord():
             return
         typed_list = typing_list.copy()
-        typed_list_copy = typed_list.copy()
-        for letter in typed_list_copy:
-            index = typed_list_copy.index(letter)
-            if letter == chosen_word_list[index]:
-                check[index] = "2"
-                StampCheck('2', letter)
-            elif letter in chosen_word_list and letter != chosen_word_list[index]:
-                check[index] = "1"
-                StampCheck('1', letter)
-            else:
-                check[index] = "0"
-                StampCheck('0', letter)
-            typed_list_copy[index] = '_'
+        chosen_word_list_copy = chosen_word_list.copy()
+        for i in range(len(typed_list)):
+            letter = typed_list[i]
+            if letter == chosen_word_list_copy[i]:
+                check[i] = "2"  # Correct letter in correct position
+                StampCheck('2', i)
+                chosen_word_list_copy[i] = None  # Mark this letter as used
+
+        for i in range(len(typed_list)):
+            letter = typed_list[i]
+            if letter in chosen_word_list_copy:
+                check[i] = "1"  # Correct letter in wrong position
+                StampCheck('1', i)
+                chosen_word_list_copy[chosen_word_list_copy.index(letter)] = None  # Mark this letter as used
+        
+        for i in range(len(typed_list)):
+            if check[i] == "0":
+                StampCheck('0', i)  # Letter not in the word
         typing_line += 1
         typing_list.clear()
+        
     check_finished = True
 
 def CheckIfWord():
