@@ -51,7 +51,7 @@ def StampCheck(color, index):
     else:
         tile.color(colors['not in word'])
     tile.stamp()
-    tile.goto(1000, 1000)
+    tile.hideturtle()
     UpdateLine()
 
 
@@ -62,27 +62,31 @@ def CheckLetters():
             return
         typed_list = typing_list.copy()
         chosen_word_list_copy = chosen_word_list.copy()
+        used_indices = set()  # To keep track of already matched indices
         for i in range(len(typed_list)):
             letter = typed_list[i]
             if letter == chosen_word_list_copy[i]:
                 check[i] = "2"  # Correct letter in correct position
                 StampCheck('2', i)
                 chosen_word_list_copy[i] = None  # Mark this letter as used
-
+                used_indices.add(i)
+        
         for i in range(len(typed_list)):
             letter = typed_list[i]
-            if letter in chosen_word_list_copy:
+            if letter in chosen_word_list_copy and i not in used_indices:
                 check[i] = "1"  # Correct letter in wrong position
                 StampCheck('1', i)
+                used_indices.add(i)
                 chosen_word_list_copy[chosen_word_list_copy.index(letter)] = None  # Mark this letter as used
-        
+
         for i in range(len(typed_list)):
             if check[i] == "0":
                 StampCheck('0', i)  # Letter not in the word
-        typing_line += 1
-        typing_list.clear()
         
-    check_finished = True
+        typing_line += 1  # Move typing line position outside the loop
+        typing_list.clear()
+        check_finished = True
+
 
 def CheckIfWord():
     response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
@@ -92,8 +96,14 @@ def CheckIfWord():
         return True
     
 def UpdateLine():
-    y_turtles[typing_line].clear()
-    y_turtles[typing_line].write(' '.join(typing_list), align="left",font=("Consolas", 52, "bold"))
+    global typing_line
+    if typing_line <=5:
+        y_turtles[typing_line]._tracer(False)
+        y_turtles[typing_line].clear()
+        y_turtles[typing_line].write(' '.join(typing_list), align="left",font=("Consolas", 52, "bold"))
+        y_turtles[typing_line]._tracer(True)
+    else:
+        typing_line = 5
 
 def AppendVal(letter):
     if len(typing_list) != 5:
@@ -114,7 +124,7 @@ def DrawGrid():
     
     grid_drawer._tracer(True)
     
-    start_x_pos = -185
+    start_x_pos = -190
     start_y_pos = -225
 
     
@@ -146,7 +156,7 @@ def DrawGrid():
         tile.stamp()
 
 def fetch_values():
-    start_x_pos = -185
+    start_x_pos = -190
     start_y_pos = -150
     
     for y in range(6):
