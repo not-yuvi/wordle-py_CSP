@@ -49,44 +49,47 @@ def setup_layout():
 
 # Gavin
 def draw_grid():
-    global start_x_pos, start_y_pos, intersection_coords
+    global intersection_coords
     
     grid_drawer._tracer(True)
     
-    textle = trtl.Turtle()
-    textle.shape('square')
-    textle.color(colors['green'])
-    textle.shapesize(3.5)
-    textle.penup()
-    for coords in intersection_coords:
-        textle.goto(coords[0]+37.5, coords[1]+37.5)
-        textle.stamp()
+    start_x_pos = -185
+    start_y_pos = -225
+
     
     grid_drawer.speed(8)
     grid_drawer.pensize(6)
+    for count in range(7):
+        grid_drawer.penup()
+        grid_drawer.goto(start_x_pos, start_y_pos + (count * 75))
+        grid_drawer.pendown()
+        grid_drawer.forward(375)
+        
     for count in range(6):
-        grid_drawer.penup()
-        grid_drawer.goto(start_x_pos, start_y_pos + count * 75)
-        grid_drawer.pendown()
-        grid_drawer.forward(375)
-        
-        
-        grid_drawer.right(90)
-        grid_drawer.penup()
-        grid_drawer.goto(start_x_pos + count * 75, -start_y_pos + 75)
-        grid_drawer.pendown()
-        grid_drawer.forward(375)
         grid_drawer.left(90)
+        grid_drawer.penup()
+        grid_drawer.goto(start_x_pos + (count * 75), start_y_pos)
+        grid_drawer.pendown()
+        grid_drawer.forward(450)
+        grid_drawer.right(90)
+    
+    tile = trtl.Turtle()
+    tile.shape('square')
+    tile.color(colors['green'])
+    tile.shapesize(3.5)
+    tile.penup()
+    for coords in intersection_coords:
+        tile.goto(coords[0]+37.5, coords[1]+37.5)
+        tile.stamp()
 
 def fetch_values():
-    global start_x_pos, start_y_pos
     start_x_pos = -185
     start_y_pos = -150
     
-    for y in range(5):
+    for y in range(6):
         for x in range(5):
             intersection_coords.append([(start_x_pos + x * 75), -(start_y_pos + y * 75)])
-            if start_x_pos + x * 75 not in x_coords:
+            if y == 0:
                 x_coords.append(start_x_pos + x * 75)
         lines[y] = intersection_coords[-5:]
         y_coords.append((intersection_coords[-1])[1])
