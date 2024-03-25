@@ -1,4 +1,4 @@
----imports---
+# ---imports---
 import turtle as trtl
 import string
 import random
