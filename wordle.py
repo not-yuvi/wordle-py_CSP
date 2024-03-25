@@ -1,10 +1,8 @@
+---imports---
 import turtle as trtl
 import string
 import random
-
 import requests
-
-
 
 intersection_coords = []
 x_coords = []
@@ -139,6 +137,7 @@ def SetupLayout():
     misc_drawer._tracer(False)
 
 # Gavin & Father Yuvraj
+# draws the grid in which the letters are placed
 def DrawGrid():
     global intersection_coords, tile
     
