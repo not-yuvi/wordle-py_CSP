@@ -102,10 +102,10 @@ def CheckLetters():
 
 def CheckIfWord():
     response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
-    if response.status_code == 404:
-        return False
-    else:
+    if response.status_code == 200:
         return True
+    else:
+        return False
     
 def UpdateLine():
     global typing_line
