@@ -43,7 +43,7 @@ misc_drawer = trtl.Turtle()
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
 
-
+# changes teh tile colors depending on how the letters match up with the correct word
 def StampCheck(color, index):
     global tile
     location = lines[typing_line][index]
@@ -59,7 +59,8 @@ def StampCheck(color, index):
     tile.hideturtle()
     UpdateLine()
 
-
+# checks if the letters entered by the user are in the word and in the correct place
+# changes the tile colors accordingly
 def CheckLetters():
     global typing_line, typed_list, check_finished
     if len(typing_list) == 5 and check_finished:
@@ -99,14 +100,15 @@ def CheckLetters():
             typing_list.clear()
             check_finished = True
 
-
+# uses an API to check if the word entered by the user is a real word
 def CheckIfWord():
     response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
     if response.status_code == 200:
         return True
     else:
         return False
-    
+        
+# updates the line as the user enters in their guess
 def UpdateLine():
     global typing_line
     if typing_line <=5:
@@ -116,11 +118,12 @@ def UpdateLine():
         y_turtles[typing_line]._tracer(True)
     else:
         typing_line = 5
-
+# adds typed letter to the grid for the user to see
 def AppendVal(letter):
     if len(typing_list) != 5:
         typing_list.append(letter.upper())
         UpdateLine()
+# removes typed letter when the user types the backspace
 def SubVal():
     if len(typing_list) != 0:
         typing_list.pop()
@@ -180,6 +183,7 @@ def fetch_values():
         y_coords.append((intersection_coords[-1])[1])
         
 # Gavin
+# uses File IO to randomly select a word from a .txt file with a lengthy selection of words
 def choose_word():
     global chosen_word_list
     word_list_file = open("word_list.txt", "r")
@@ -191,6 +195,7 @@ def choose_word():
     chosen_word_list = list(word.upper())
     return(chosen_word_list)
 
+# displays either a win or loose screen for the user
 def WinOrLose(win):
     height = 225
     width = 300
