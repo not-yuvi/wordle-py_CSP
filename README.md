@@ -1,8 +1,9 @@
 # wordle-py_CSP
-CSP game using turtle
+CSP Wordle game using turtle
 
 
 ## Colors:
+### Dark theme:
 | Where                                  | Color   |
 | -------------------------------------- | ------- |
 | Background:                            | #121213 |
@@ -12,3 +13,4 @@ CSP game using turtle
 | Not in word:                           | #3a3a3c |
 | Blank                                  | #3a3a3c |
 
+#### Light Theme:
