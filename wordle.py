@@ -100,13 +100,16 @@ def CheckLetters():
             typing_list.clear()
             check_finished = True
 
-# uses an API to check if the word entered by the user is a real word
+# uses Dictionary API to check if the word entered by the user is a real word
 def CheckIfWord():
     response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
-    if response.status_code == 200:
+    if response.status_code == 404:
+        return False
+    elif response.status_code == 200:
         return True
     else:
-        return False
+        return True
+        print('WARNING: Resource might be down')
         
 # updates the line as the user enters in their guess
 def UpdateLine():
@@ -118,12 +121,14 @@ def UpdateLine():
         y_turtles[typing_line]._tracer(True)
     else:
         typing_line = 5
-# adds typed letter to the grid for the user to see
+
+# ----keypress handle functions----
+# Append Val - adds typed letter to the grid for the user to see
+# Sub Val - removes last letter when the user hits the backspace key
 def AppendVal(letter):
     if len(typing_list) != 5:
         typing_list.append(letter.upper())
         UpdateLine()
-# removes typed letter when the user types the backspace
 def SubVal():
     if len(typing_list) != 0:
         typing_list.pop()
