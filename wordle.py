@@ -4,6 +4,8 @@ import random
 
 import requests
 
+
+
 intersection_coords = []
 x_coords = []
 y_coords = []
@@ -12,6 +14,8 @@ lines = {}
 typing_list = []
 typed_list = []
 chosen_word_list = []
+lose = False
+win = False
 
 # 0 = not in word, 1 = yellow, 2 = green
 check = ['0', '0', '0', '0', '0']
@@ -39,6 +43,7 @@ misc_drawer = trtl.Turtle()
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
 
+
 def StampCheck(color, index):
     global tile
     location = lines[typing_line][index]
@@ -60,6 +65,7 @@ def CheckLetters():
     if len(typing_list) == 5 and check_finished:
         if not CheckIfWord():
             return
+        win_check = 0
         typed_list = typing_list.copy()
         chosen_word_list_copy = chosen_word_list.copy()
         used_indices = set()  # To keep track of already matched indices
@@ -70,6 +76,7 @@ def CheckLetters():
                 StampCheck('2', i)
                 chosen_word_list_copy[i] = None  # Mark this letter as used
                 used_indices.add(i)
+                win_check += 1
         
         for i in range(len(typed_list)):
             letter = typed_list[i]
@@ -82,10 +89,15 @@ def CheckLetters():
         for i in range(len(typed_list)):
             if check[i] == "0":
                 StampCheck('0', i)  # Letter not in the word
-        
-        typing_line += 1  # Move typing line position outside the loop
-        typing_list.clear()
-        check_finished = True
+        if win_check == 5:
+            WinOrLose(True)
+
+        if typing_line == 5:
+            WinOrLose(False)
+        else:
+            typing_line += 1  # Move typing line position outside the loop
+            typing_list.clear()
+            check_finished = True
 
 
 def CheckIfWord():
@@ -179,10 +191,35 @@ def choose_word():
     chosen_word_list = list(word.upper())
     return(chosen_word_list)
 
+def WinOrLose(win):
+    height = 225
+    width = 300
+    corner_radius = 20
+    fill_color = 'white'
+    border_color = 'black'
+    misc_drawer.begin_fill()
+    misc_drawer.penup()
+    misc_drawer.goto(lines[3][4][0], lines[3][4][1])
+    misc_drawer.pendown()
+
+    misc_drawer.color(border_color)
+    misc_drawer.pensize(6)
+    misc_drawer.fillcolor(fill_color)
+
+    # Draw the rounded corners
+    for _ in range(2):
+        misc_drawer.circle(corner_radius, 90)
+        misc_drawer.forward(height)
+        misc_drawer.circle(corner_radius, 90)
+        misc_drawer.forward(width)
+    misc_drawer.end_fill()
+    
+
 
 SetupLayout()
 fetch_values()
 DrawGrid()
+# WinOrLose(True)
 print(choose_word())
 print(intersection_coords)
 print(x_coords)
@@ -194,11 +231,15 @@ i = 1
 for y in y_coords:
     #Cite = Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
     new_turtle = trtl.Turtle()
+    new_turtle._tracer(False)
     new_turtle.penup()
     new_turtle.color('white')
     new_turtle.goto(x_coords[0] + 20, y)
     new_turtle.write(' ', align="left",font=("Consolas", 52, "bold"))
     y_turtles.append(new_turtle)
+    new_turtle._tracer(True)
+for turtle in y_turtles:
+    turtle.hideturtle()
     
 for char in string.ascii_letters:
     wn.onkeypress(lambda c = char: AppendVal(c), char)
