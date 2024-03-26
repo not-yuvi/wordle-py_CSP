@@ -1,8 +1,11 @@
 # ---imports---
+from distutils.log import error
 import turtle as trtl
 import string
 import random
-import requests
+from typing import final
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError
 
 intersection_coords = []
 x_coords = []
@@ -34,7 +37,6 @@ y_turtles = []
 check_finished = True
 
 # turtles
-letter_drawer = trtl.Turtle()
 grid_drawer = trtl.Turtle()
 misc_drawer = trtl.Turtle()
 
@@ -100,14 +102,16 @@ def CheckLetters():
 
 # uses Dictionary API to check if the word entered by the user is a real word
 def CheckIfWord():
-    response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
-    if response.status_code == 404:
-        return False
-    elif response.status_code == 200:
-        return True
-    else:
-        return True
-        print('WARNING: Resource might be down')
+    # Cite[to fix pip install requests] https://dev.to/bowmanjd/http-calls-in-python-without-requests-or-other-external-dependencies-5aj1
+
+    try:
+        url = (f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
+        httprequest = Request(url, headers={"Accept": "application/json"})
+        with urlopen(httprequest) as response:
+            if response.status == 200:
+                return True
+    except HTTPError as e:
+            return False
         
 # updates the line as the user enters in their guess
 def UpdateLine():
@@ -133,9 +137,6 @@ def SubVal():
         print(typing_list)
         UpdateLine()
 
-def SetupLayout():
-    misc_drawer._tracer(False)
-
 # Gavin & Father Yuvraj
 # draws the grid in which the letters are placed
 def DrawGrid():
@@ -146,7 +147,7 @@ def DrawGrid():
     start_x_pos = -190
     start_y_pos = -225
 
-    
+    grid_drawer.hideturtle()
     grid_drawer.speed(10)
     grid_drawer.pensize(6)
     for count in range(7):
@@ -201,14 +202,16 @@ def choose_word():
 
 # displays either a win or loose screen for the user
 def WinOrLose(win):
-    height = 225
-    width = 300
+    misc_drawer._tracer(False)
+    misc_drawer.hideturtle()
+    height = 200
+    width = 375
     corner_radius = 20
     fill_color = 'white'
     border_color = 'black'
     misc_drawer.begin_fill()
     misc_drawer.penup()
-    misc_drawer.goto(lines[3][4][0], lines[3][4][1])
+    misc_drawer.goto(lines[4][4][0] + 75, lines[4][4][1] + 30)
     misc_drawer.pendown()
 
     misc_drawer.color(border_color)
@@ -222,20 +225,36 @@ def WinOrLose(win):
         misc_drawer.circle(corner_radius, 90)
         misc_drawer.forward(width)
     misc_drawer.end_fill()
+
+    final_text = trtl.Turtle()
+    sub_final_text = trtl.Turtle()
+    final_text.hideturtle()
+    sub_final_text.hideturtle()
+    if win:
+        final_text.color(colors['green'])
+        final_text.write('YOU WIN!', align='center',  font = ("Consolas", 50, 'normal'))
+        sub_final_text.penup()
+        sub_final_text.goto(0, -45)
+        sub_final_text.write(f'You guessed correctly in {typing_line + 1} attempts', align='center',  font = ("Consolas", 15, 'normal'))
+    else:
+        final_text.color('red')
+        final_text.write('YOU LOSE :(', align='center',  font = ("Consolas", 50, 'normal'))
+        sub_final_text.penup()
+        sub_final_text.goto(0, -45)
+        sub_final_text.write(f'The word was {"".join(chosen_word_list)}', align='center',  font = ("Consolas", 15, 'normal'))
     
 
+    
+    
 
-SetupLayout()
 fetch_values()
 DrawGrid()
-# WinOrLose(True)
 print(choose_word())
 print(intersection_coords)
 print(x_coords)
 print(y_coords)
 print(lines)
 
-letter_drawer.penup()
 i = 1
 for y in y_coords:
     #Cite = Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
