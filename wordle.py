@@ -18,6 +18,7 @@ chosen_word_list = []
 lose = False
 win = False
 
+
 # 0 = not in word, 1 = yellow, 2 = green
 check = ['0', '0', '0', '0', '0']
 
@@ -42,6 +43,9 @@ misc_drawer = trtl.Turtle()
 
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
+
+mr_Hamre_image = 'hamre.gif'
+wn.register_shape(mr_Hamre_image)
 
 # changes teh tile colors depending on how the letters match up with the correct word
 def StampCheck(color, index):
@@ -226,8 +230,10 @@ def WinOrLose(win):
         misc_drawer.forward(width)
     misc_drawer.end_fill()
 
+
     final_text = trtl.Turtle()
     sub_final_text = trtl.Turtle()
+
     final_text.hideturtle()
     sub_final_text.hideturtle()
     if win:
@@ -236,6 +242,16 @@ def WinOrLose(win):
         sub_final_text.penup()
         sub_final_text.goto(0, -45)
         sub_final_text.write(f'You guessed correctly in {typing_line + 1} attempts', align='center',  font = ("Consolas", 15, 'normal'))
+        hamre = trtl.Turtle()
+        hamre.shape(mr_Hamre_image)
+        hamre.goto(250, 0)
+        for count in range(50):
+            hamre._tracer(True)
+            hamre.forward(-20)
+            hamre.setheading(count)
+            hamre._tracer(False)
+            # hamre.goto(hamre.xcor(), 0)
+
     else:
         final_text.color('red')
         final_text.write('YOU LOSE :(', align='center',  font = ("Consolas", 50, 'normal'))
@@ -249,6 +265,7 @@ def WinOrLose(win):
 
 fetch_values()
 DrawGrid()
+WinOrLose(True)
 print(choose_word())
 print(intersection_coords)
 print(x_coords)
