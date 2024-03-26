@@ -1,5 +1,4 @@
 # ---imports---
-from distutils.log import error
 import turtle as trtl
 import string
 import random
