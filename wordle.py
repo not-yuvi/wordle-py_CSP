@@ -2,6 +2,7 @@
 import turtle as trtl
 import string
 import random
+import os
 from typing import final
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
@@ -43,7 +44,7 @@ misc_drawer = trtl.Turtle()
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
 
-mr_Hamre_image = 'hamre.gif'
+mr_Hamre_image = os.path.join('data', 'hamre.gif')
 wn.register_shape(mr_Hamre_image)
 
 # changes teh tile colors depending on how the letters match up with the correct word
