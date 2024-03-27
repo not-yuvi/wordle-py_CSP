@@ -6,6 +6,7 @@ import os
 from typing import final
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
+import time
 
 intersection_coords = []
 x_coords = []
@@ -46,6 +47,10 @@ wn.bgcolor(colors['background'])
 
 mr_Hamre_image = os.path.join('data', 'hamre.gif')
 wn.register_shape(mr_Hamre_image)
+
+mr_Hamre_image_flipped = os.path.join('data', 'hamre_flipped.gif')
+wn.register_shape(mr_Hamre_image_flipped)
+
 
 # changes teh tile colors depending on how the letters match up with the correct word
 def StampCheck(color, index):
@@ -243,13 +248,28 @@ def WinOrLose(win):
         sub_final_text.goto(0, -45)
         sub_final_text.write(f'You guessed correctly in {typing_line + 1} attempts', align='center',  font = ("Consolas", 15, 'normal'))
         hamre = trtl.Turtle()
+        hamre.penup()
+        hamre._tracer(True)
         hamre.shape(mr_Hamre_image)
         hamre.goto(250, 0)
         for count in range(50):
-            hamre._tracer(True)
-            hamre.forward(-20)
-            hamre.setheading(count)
-            hamre._tracer(False)
+            new_loc = random.randint(-200, 200)
+            hamre.clear()
+            time.sleep(1)
+            hamre.shape(mr_Hamre_image_flipped)
+            time.sleep(1)
+            hamre.shape(mr_Hamre_image)
+            time.sleep(1)
+            hamre.shape(mr_Hamre_image_flipped)
+            time.sleep(1)
+            hamre.shape(mr_Hamre_image)
+            time.sleep(1)
+            hamre.shape(mr_Hamre_image_flipped)
+            time.sleep(1)
+            hamre.shape(mr_Hamre_image)
+            hamre.forward(new_loc)
+            if hamre.xcor() > 400 or hamre.xcor() < -400:
+                hamre.goto(250, 0)
             # hamre.goto(hamre.xcor(), 0)
 
     else:
