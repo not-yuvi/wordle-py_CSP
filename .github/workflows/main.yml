@@ -14,7 +14,7 @@ jobs:
     - name: Install PyInstaller
       run: pip install pyinstaller
     - name: Create Executable with Data File
-      run: pyinstaller --onefile --icon=src/wordle.ico --add-data "word_list.txt;." --add-data "hamre.gif;." wordle.py
+      run: pyinstaller --onefile --icon=.src/wordle.ico --add-data "word_list.txt;." --add-data "hamre.gif;data" wordle.py
       # The '.' specifies the root directory of the executable where 'word_list.txt' will be placed
     - name: Upload Executable
       uses: actions/upload-artifact@v2
