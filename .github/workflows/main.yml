@@ -1,9 +1,12 @@
-name: Python to EXE
+name: Release Workflow
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  build:
+  build-and-release:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -13,11 +16,35 @@ jobs:
         python-version: '3.x'
     - name: Install PyInstaller
       run: pip install pyinstaller
-    - name: Create Executable with Data File
-      run: pyinstaller --onefile --icon=.src/wordle.ico --add-data "word_list.txt;." --add-data "data/*;data" wordle.py
-      # The '.' specifies the root directory of the executable where 'word_list.txt' will be placed
-    - name: Upload Executable
-      uses: actions/upload-artifact@v2
+    - name: Create Executable
+      run: pyinstaller --onefile --icon=".src/wordle.ico" --add-data "word_list.txt;." --add-data "data/*;data" wordle.py
+    - name: Zip Data Folder and Files
+      run: Compress-Archive -Path data, wordle.py, word_list.txt -DestinationPath wordle_py.zip
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: wordle_exe  # This is the name of the artifact that will be uploaded
-        path: dist/wordle.exe  # The path should match the output from PyInstaller
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Upload EXE
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/wordle.exe
+        asset_name: wordle.exe
+        asset_content_type: application/octet-stream
+    - name: Upload ZIP
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./wordle_py.zip
+        asset_name: wordle_py.zip
+        asset_content_type: application/zip
