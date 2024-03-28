@@ -50,13 +50,13 @@ wn.register_shape(mr_Hamre_image)
 
 mr_Hamre_image_flipped = os.path.join('data', 'hamre_flipped.gif')
 wn.register_shape(mr_Hamre_image_flipped)
-
+# https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
 saxophone_image = os.path.join('data', 'saxophone.gif')
 wn.register_shape(saxophone_image)
 
 saxophone_flipped_image = os.path.join('data', 'saxophone_flipped.gif')
 wn.register_shape(saxophone_flipped_image)
-
+# complete citation
 arrow_image = os.path.join('data', 'arrow.gif')
 wn.register_shape(arrow_image)
 
@@ -314,7 +314,6 @@ def WinOrLose(win):
         saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
         hamre._tracer(True)
         while True:
-            # https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
             new_loc = random.randint(-200, 200)
             new_deg = random.randint(0, 360)
             for num in range(3):
