@@ -3,7 +3,6 @@ import turtle as trtl
 import string
 import random
 import os
-from typing import final
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
 import time
@@ -51,6 +50,25 @@ wn.register_shape(mr_Hamre_image)
 mr_Hamre_image_flipped = os.path.join('data', 'hamre_flipped.gif')
 wn.register_shape(mr_Hamre_image_flipped)
 
+saxophone_image = os.path.join('data', 'saxophone.gif')
+wn.register_shape(saxophone_image)
+
+saxophone_flipped_image = os.path.join('data', 'saxophone_flipped.gif')
+wn.register_shape(saxophone_flipped_image)
+
+arrow_image = os.path.join('data', 'arrow.gif')
+wn.register_shape(arrow_image)
+
+cursor = trtl.Turtle()
+
+def MoveCursorToLine():
+    cursor.setheading(270)
+    next_cor = cursor.ycor() - 75
+    distance_left = 75
+    while abs(distance_left) > 0.1:
+        distance = abs(next_cor - cursor.ycor())
+        distance_left = distance * 0.1
+        cursor.forward(distance_left)
 
 # changes teh tile colors depending on how the letters match up with the correct word
 def StampCheck(color, index):
@@ -107,6 +125,7 @@ def CheckLetters():
         else:
             typing_line += 1  # Move typing line position outside the loop
             typing_list.clear()
+            MoveCursorToLine()
             check_finished = True
 
 # uses Dictionary API to check if the word entered by the user is a real word
@@ -143,12 +162,11 @@ def AppendVal(letter):
 def SubVal():
     if len(typing_list) != 0:
         typing_list.pop()
-        print(typing_list)
         UpdateLine()
 
 # Gavin & Father Yuvraj
-# draws the grid in which the letters are placed
-def DrawGrid():
+# sets up the ui before starting the game
+def SetUp():
     global intersection_coords, tile
     
     grid_drawer._tracer(True)
@@ -183,6 +201,11 @@ def DrawGrid():
     for coords in intersection_coords:
         tile.goto(coords[0]+37.5, coords[1]+37.5)
         tile.stamp()
+    tile.hideturtle()
+    
+    cursor.penup()
+    cursor.goto(x_coords[0] - 75, lines[typing_line][0][1] + 37.5)
+    cursor.shape(arrow_image)
 
 def fetch_values():
     start_x_pos = -190
@@ -247,29 +270,39 @@ def WinOrLose(win):
         sub_final_text.penup()
         sub_final_text.goto(0, -45)
         sub_final_text.write(f'You guessed correctly in {typing_line + 1} attempts', align='center',  font = ("Consolas", 15, 'normal'))
+
+        
+        
         hamre = trtl.Turtle()
+        saxophone = trtl.Turtle()
         hamre.penup()
-        hamre._tracer(True)
+        saxophone.penup()
+        hamre._tracer(False)
         hamre.shape(mr_Hamre_image)
+        saxophone.shape(saxophone_image)
         hamre.goto(250, 0)
-        for count in range(50):
+        saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
+        hamre._tracer(True)
+        while True:
+            # https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
             new_loc = random.randint(-200, 200)
-            hamre.clear()
-            time.sleep(1)
-            hamre.shape(mr_Hamre_image_flipped)
-            time.sleep(1)
-            hamre.shape(mr_Hamre_image)
-            time.sleep(1)
-            hamre.shape(mr_Hamre_image_flipped)
-            time.sleep(1)
-            hamre.shape(mr_Hamre_image)
-            time.sleep(1)
-            hamre.shape(mr_Hamre_image_flipped)
-            time.sleep(1)
-            hamre.shape(mr_Hamre_image)
+            for num in range(3):
+                time.sleep(0.2)
+                hamre.shape(mr_Hamre_image_flipped)
+                saxophone._tracer(False)
+                saxophone.shape(saxophone_flipped_image)
+                saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
+                saxophone._tracer(True)
+                time.sleep(0.2)
+                hamre.shape(mr_Hamre_image)
+                saxophone._tracer(False)
+                saxophone.shape(saxophone_image)
+                saxophone.goto(hamre.xcor() - 100, hamre.ycor() + 15)
+                saxophone._tracer(True)
             hamre.forward(new_loc)
             if hamre.xcor() > 400 or hamre.xcor() < -400:
                 hamre.goto(250, 0)
+                # saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
             # hamre.goto(hamre.xcor(), 0)
 
     else:
@@ -284,13 +317,13 @@ def WinOrLose(win):
     
 
 fetch_values()
-DrawGrid()
-WinOrLose(True)
-print(choose_word())
-print(intersection_coords)
-print(x_coords)
-print(y_coords)
-print(lines)
+SetUp()
+# WinOrLose(True)
+# print(choose_word())
+# print(intersection_coords)
+# print(x_coords)
+# print(y_coords)
+# print(lines)
 
 i = 1
 for y in y_coords:
