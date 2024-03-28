@@ -13,4 +13,4 @@ CSP Wordle game using turtle
 | Not in word:                           | #3a3a3c |
 | Blank                                  | #3a3a3c |
 
-#### Light Theme:
+#### Light Theme: (TBA)
