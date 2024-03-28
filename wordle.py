@@ -7,6 +7,7 @@ from urllib.request import urlopen, Request
 from urllib.error import HTTPError
 import time
 
+
 intersection_coords = []
 x_coords = []
 y_coords = []
@@ -35,7 +36,7 @@ colors = {
 
 y_turtles = []
 
-check_finished = True
+check_running = False
 
 # turtles
 grid_drawer = trtl.Turtle()
@@ -73,6 +74,7 @@ def MoveCursorToLine():
 # changes teh tile colors depending on how the letters match up with the correct word
 def StampCheck(color, index):
     global tile
+    tile._tracer(False)
     location = lines[typing_line][index]
     location = [location[0]+37.5, location[1]+37.5]
     tile.goto(location)
@@ -85,62 +87,76 @@ def StampCheck(color, index):
     tile.stamp()
     tile.hideturtle()
     UpdateLine()
+    tile._tracer(True)
 
 # checks if the letters entered by the user are in the word and in the correct place
 # changes the tile colors accordingly
 def CheckLetters():
-    global typing_line, typed_list, check_finished
-    if len(typing_list) == 5 and check_finished:
-        if not CheckIfWord():
-            return
-        win_check = 0
-        typed_list = typing_list.copy()
-        chosen_word_list_copy = chosen_word_list.copy()
-        used_indices = set()  # To keep track of already matched indices
-        for i in range(len(typed_list)):
-            letter = typed_list[i]
-            if letter == chosen_word_list_copy[i]:
-                check[i] = "2"  # Correct letter in correct position
-                StampCheck('2', i)
-                chosen_word_list_copy[i] = None  # Mark this letter as used
-                used_indices.add(i)
-                win_check += 1
-        
-        for i in range(len(typed_list)):
-            letter = typed_list[i]
-            if letter in chosen_word_list_copy and i not in used_indices:
-                check[i] = "1"  # Correct letter in wrong position
-                StampCheck('1', i)
-                used_indices.add(i)
-                chosen_word_list_copy[chosen_word_list_copy.index(letter)] = None  # Mark this letter as used
+    global typing_line, typed_list, check_running
 
-        for i in range(len(typed_list)):
-            if check[i] == "0":
-                StampCheck('0', i)  # Letter not in the word
-        if win_check == 5:
-            WinOrLose(True)
+    # Check if CheckLetters is already running
+    if check_running:
+        return 
 
-        if typing_line == 5:
-            WinOrLose(False)
-        else:
-            typing_line += 1  # Move typing line position outside the loop
-            typing_list.clear()
-            MoveCursorToLine()
-            check_finished = True
+    # Set the flag to indicate that CheckLetters is running
+    check_running = True
+    try:
+        if len(typing_list) == 5:
+            if not CheckIfWord(''.join(typing_list)):
+                return
+            win_check = 0
+            typed_list = typing_list.copy()
+            chosen_word_list_copy = chosen_word_list.copy()
+
+            used_indices = set()
+            for i in range(len(typed_list)):
+                letter = typed_list[i]
+                if letter == chosen_word_list_copy[i]:
+                    check[i] = "2" 
+                    StampCheck('2', i)
+                    chosen_word_list_copy[i] = None
+                    used_indices.add(i)
+                    win_check += 1
+            
+            for i in range(len(typed_list)):
+                letter = typed_list[i]
+                if letter in chosen_word_list_copy and i not in used_indices:
+                    check[i] = "1"
+                    StampCheck('1', i)
+                    used_indices.add(i)
+                    chosen_word_list_copy[chosen_word_list_copy.index(letter)] = None
+
+            for i in range(len(typed_list)):
+                if check[i] == "0":
+                    StampCheck('0', i)
+            if win_check == 5:
+                WinOrLose(True)
+
+            if typing_line == 5:
+                WinOrLose(False)
+            else:
+                typing_line += 1
+                typing_list.clear()
+                MoveCursorToLine()
+    finally:
+        check_running = False
+
 
 # uses Dictionary API to check if the word entered by the user is a real word
-def CheckIfWord():
-    # Cite[to fix pip install requests] https://dev.to/bowmanjd/http-calls-in-python-without-requests-or-other-external-dependencies-5aj1
+def CheckIfWord(word):
 
     try:
-        url = (f"https://api.dictionaryapi.dev/api/v2/entries/en/{''.join(typing_list)}")
+        url = (f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
         httprequest = Request(url, headers={"Accept": "application/json"})
         with urlopen(httprequest) as response:
             if response.status == 200:
                 return True
     except HTTPError as e:
-            return False
-        
+        word_list_file = open("word_list.txt", "r")
+        word_list = word_list_file.readlines()
+        return (True if word.title() + "\n" in word_list else False)
+# complete citation
+
 # updates the line as the user enters in their guess
 def UpdateLine():
     global typing_line
@@ -206,6 +222,20 @@ def SetUp():
     cursor.penup()
     cursor.goto(x_coords[0] - 75, lines[typing_line][0][1] + 37.5)
     cursor.shape(arrow_image)
+
+    for y in y_coords:
+#Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
+        new_turtle = trtl.Turtle()
+        new_turtle._tracer(False)
+        new_turtle.penup()
+        new_turtle.color('white')
+        new_turtle.goto(x_coords[0] + 20, y)
+        new_turtle.write(' ', align="left",font=("Consolas", 52, "bold"))
+        y_turtles.append(new_turtle)
+        new_turtle._tracer(True)
+    for turtle in y_turtles:
+        turtle.hideturtle()
+# complete citation
 
 def fetch_values():
     start_x_pos = -190
@@ -286,6 +316,7 @@ def WinOrLose(win):
         while True:
             # https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
             new_loc = random.randint(-200, 200)
+            new_deg = random.randint(0, 360)
             for num in range(3):
                 time.sleep(0.2)
                 hamre.shape(mr_Hamre_image_flipped)
@@ -300,7 +331,9 @@ def WinOrLose(win):
                 saxophone.goto(hamre.xcor() - 100, hamre.ycor() + 15)
                 saxophone._tracer(True)
             hamre.forward(new_loc)
-            if hamre.xcor() > 400 or hamre.xcor() < -400:
+            hamre.setheading(new_deg)
+            hamre.clear()
+            if -400 > hamre.xcor() > 400 or -300 > hamre.xcor() > 300:
                 hamre.goto(250, 0)
                 # saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
             # hamre.goto(hamre.xcor(), 0)
@@ -315,29 +348,10 @@ def WinOrLose(win):
 
     
     
-
+choose_word()
 fetch_values()
 SetUp()
 # WinOrLose(True)
-# print(choose_word())
-# print(intersection_coords)
-# print(x_coords)
-# print(y_coords)
-# print(lines)
-
-i = 1
-for y in y_coords:
-    #Cite = Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
-    new_turtle = trtl.Turtle()
-    new_turtle._tracer(False)
-    new_turtle.penup()
-    new_turtle.color('white')
-    new_turtle.goto(x_coords[0] + 20, y)
-    new_turtle.write(' ', align="left",font=("Consolas", 52, "bold"))
-    y_turtles.append(new_turtle)
-    new_turtle._tracer(True)
-for turtle in y_turtles:
-    turtle.hideturtle()
     
 for char in string.ascii_letters:
     wn.onkeypress(lambda c = char: AppendVal(c), char)
