@@ -1,6 +1,5 @@
 # wordle-py_CSP
-CSP Wordle game using turtle
-
+CSP Wordle game using turtle 1.0
 
 ## Colors:
 ### Dark theme:
