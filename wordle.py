@@ -7,15 +7,18 @@ from urllib.request import urlopen, Request
 from urllib.error import HTTPError
 import time
 
-
+# ----INITIALIZING VARIABLES----
+# Lists
 intersection_coords = []
 x_coords = []
 y_coords = []
 lines = {}
-
 typing_list = []
 typed_list = []
 chosen_word_list = []
+
+
+# Win/Lose
 lose = False
 win = False
 
@@ -25,6 +28,13 @@ check = ['0', '0', '0', '0', '0']
 
 typing_line = 0
 
+
+y_turtles = []
+
+check_running = False
+
+# CONSTANTS
+
 colors = {
     'background': '#121213',
     'foreground': '#818384',
@@ -33,11 +43,6 @@ colors = {
     'not in word': '#3a3a3c',
     'blank' : '#3a3a3c',
 }
-
-y_turtles = []
-
-check_running = False
-
 # turtles
 grid_drawer = trtl.Turtle()
 misc_drawer = trtl.Turtle()
@@ -50,6 +55,7 @@ wn.register_shape(mr_Hamre_image)
 
 mr_Hamre_image_flipped = os.path.join('data', 'hamre_flipped.gif')
 wn.register_shape(mr_Hamre_image_flipped)
+
 # https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
 saxophone_image = os.path.join('data', 'saxophone.gif')
 wn.register_shape(saxophone_image)
@@ -57,11 +63,15 @@ wn.register_shape(saxophone_image)
 saxophone_flipped_image = os.path.join('data', 'saxophone_flipped.gif')
 wn.register_shape(saxophone_flipped_image)
 # complete citation
+
+# https://www.freeiconspng.com/thumbs/white-arrow-png/curved-white-arrow-png-0.png
 arrow_image = os.path.join('data', 'arrow.gif')
 wn.register_shape(arrow_image)
+# complete citation
 
 cursor = trtl.Turtle()
 
+# Sooth EaseIn line indicator - Yuvraj
 def MoveCursorToLine():
     cursor.setheading(270)
     next_cor = cursor.ycor() - 75
@@ -71,7 +81,7 @@ def MoveCursorToLine():
         distance_left = distance * 0.1
         cursor.forward(distance_left)
 
-# changes teh tile colors depending on how the letters match up with the correct word
+# changes the tile colors depending on how the letters match up with the correct word - Yuvraj
 def StampCheck(color, index):
     global tile
     tile._tracer(False)
@@ -90,7 +100,7 @@ def StampCheck(color, index):
     tile._tracer(True)
 
 # checks if the letters entered by the user are in the word and in the correct place
-# changes the tile colors accordingly
+# changes the tile colors accordingly - Gavin
 def CheckLetters():
     global typing_line, typed_list, check_running
 
@@ -109,6 +119,7 @@ def CheckLetters():
             chosen_word_list_copy = chosen_word_list.copy()
 
             used_indices = set()
+            # checks if letter is in the correct place in the word
             for i in range(len(typed_list)):
                 letter = typed_list[i]
                 if letter == chosen_word_list_copy[i]:
@@ -117,7 +128,7 @@ def CheckLetters():
                     chosen_word_list_copy[i] = None
                     used_indices.add(i)
                     win_check += 1
-            
+            # checks if the letter is in the word and makes changes accordingly
             for i in range(len(typed_list)):
                 letter = typed_list[i]
                 if letter in chosen_word_list_copy and i not in used_indices:
@@ -125,10 +136,11 @@ def CheckLetters():
                     StampCheck('1', i)
                     used_indices.add(i)
                     chosen_word_list_copy[chosen_word_list_copy.index(letter)] = None
-
+            # checks if letter is not in the word and makes changes accordingly
             for i in range(len(typed_list)):
                 if check[i] == "0":
                     StampCheck('0', i)
+            # checks if the user has won or lost
             if win_check == 5:
                 WinOrLose(True)
 
@@ -142,7 +154,7 @@ def CheckLetters():
         check_running = False
 
 
-# uses Dictionary API to check if the word entered by the user is a real word
+# uses Dictionary API to check if the word entered by the user is a real word - Yuvraj
 def CheckIfWord(word):
 
     try:
@@ -157,7 +169,7 @@ def CheckIfWord(word):
         return (True if word.title() + "\n" in word_list else False)
 # complete citation
 
-# updates the line as the user enters in their guess
+# updates the line as the user enters in their guess - Yuvraj
 def UpdateLine():
     global typing_line
     if typing_line <=5:
@@ -169,8 +181,8 @@ def UpdateLine():
         typing_line = 5
 
 # ----keypress handle functions----
-# Append Val - adds typed letter to the grid for the user to see
-# Sub Val - removes last letter when the user hits the backspace key
+# Append Val - adds typed letter to the grid for the user to see - Yuvraj
+# Sub Val - removes last letter when the user hits the backspace key - Gavin
 def AppendVal(letter):
     if len(typing_list) != 5:
         typing_list.append(letter.upper())
@@ -180,8 +192,7 @@ def SubVal():
         typing_list.pop()
         UpdateLine()
 
-# Gavin & Father Yuvraj
-# sets up the ui before starting the game
+# sets up the ui before starting the game - (grid - Gavin) , (tiles - Yuvraj)
 def SetUp():
     global intersection_coords, tile
     
@@ -224,7 +235,7 @@ def SetUp():
     cursor.shape(arrow_image)
 
     for y in y_coords:
-#Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
+# Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
         new_turtle = trtl.Turtle()
         new_turtle._tracer(False)
         new_turtle.penup()
@@ -236,7 +247,8 @@ def SetUp():
     for turtle in y_turtles:
         turtle.hideturtle()
 # complete citation
-
+ 
+# Gets values of intersection and the y and x coords of the tiles and populates lists accordingly - Yuvraj
 def fetch_values():
     start_x_pos = -190
     start_y_pos = -150
@@ -249,8 +261,7 @@ def fetch_values():
         lines[y] = intersection_coords[-5:]
         y_coords.append((intersection_coords[-1])[1])
         
-# Gavin
-# uses File IO to randomly select a word from a .txt file with a lengthy selection of words
+# uses File IO to randomly select a word from a .txt file with a lengthy selection of words - Gavin
 def choose_word():
     global chosen_word_list
     word_list_file = open("word_list.txt", "r")
@@ -262,7 +273,7 @@ def choose_word():
     chosen_word_list = list(word.upper())
     return(chosen_word_list)
 
-# displays either a win or loose screen for the user
+# displays either a win or loose screen for the user - Gavin
 def WinOrLose(win):
     misc_drawer._tracer(False)
     misc_drawer.hideturtle()
@@ -280,7 +291,7 @@ def WinOrLose(win):
     misc_drawer.pensize(6)
     misc_drawer.fillcolor(fill_color)
 
-    # Draw the rounded corners
+    # Draw the rounded corners - Yuvraj
     for _ in range(2):
         misc_drawer.circle(corner_radius, 90)
         misc_drawer.forward(height)
@@ -302,7 +313,7 @@ def WinOrLose(win):
         sub_final_text.write(f'You guessed correctly in {typing_line + 1} attempts', align='center',  font = ("Consolas", 15, 'normal'))
 
         
-        
+        # Draw Hamre.gif files and saxophone - Gavin
         hamre = trtl.Turtle()
         saxophone = trtl.Turtle()
         hamre.penup()
@@ -332,11 +343,9 @@ def WinOrLose(win):
             hamre.forward(new_loc)
             hamre.setheading(new_deg)
             hamre.clear()
-            if -400 > hamre.xcor() > 400 or -300 > hamre.xcor() > 300:
+            if (-400 > hamre.xcor() > 400) or (-300 > hamre.xcor() > 300):
                 hamre.goto(250, 0)
-                # saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
-            # hamre.goto(hamre.xcor(), 0)
-
+    # Lose - Yuvraj
     else:
         final_text.color('red')
         final_text.write('YOU LOSE :(', align='center',  font = ("Consolas", 50, 'normal'))
@@ -352,6 +361,7 @@ fetch_values()
 SetUp()
 # WinOrLose(True)
     
+# ----EVENTS----
 for char in string.ascii_letters:
     wn.onkeypress(lambda c = char: AppendVal(c), char)
 wn.onkeypress(lambda : SubVal(), 'BackSpace')
