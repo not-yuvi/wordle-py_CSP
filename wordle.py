@@ -1,3 +1,10 @@
+# Gavin Schwinghammer and Yuvraj Arora
+# Description: This program is the game Wordle made using python and the turtle library. Wordle is a game where you get 6 tries at guessing a word and the word is 5 letters long. After pressing enter after every attempt, the game compares your word and gives a indicator.
+#              Green means right spot of the letter. Yellow means wrong stop but the letter is in the word. Grey means the letter is not in the word.
+# Date: 3/29/2024
+# Bugs: Bugs fixed after extensive testing/ No bugs found
+
+
 # ---imports---
 import turtle as trtl
 import string
