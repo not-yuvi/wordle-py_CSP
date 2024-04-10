@@ -6,6 +6,9 @@
 
 
 # ---imports---
+from lib2to3.pgen2.token import SEMI
+from tkinter import CENTER
+from tkinter.font import BOLD
 import turtle as trtl
 import string
 import random
@@ -35,7 +38,7 @@ check = ['0', '0', '0', '0', '0']
 
 typing_line = 0
 
-
+light = None
 y_turtles = []
 
 check_running = False
@@ -53,6 +56,7 @@ colors = {
 # turtles
 grid_drawer = trtl.Turtle()
 misc_drawer = trtl.Turtle()
+theme_turtle = trtl.Turtle()
 
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
@@ -254,7 +258,60 @@ def SetUp():
     for turtle in y_turtles:
         turtle.hideturtle()
 # complete citation
- 
+    theme_turtle.goto(wn.window_width()/2 - 100, wn.window_height()/2 - 100)
+    theme_turtle.shape('square')
+    theme_turtle.shapesize(4, 4)
+    ToggleThemeBtn(False)
+
+def ToggleThemeBtn(dark):
+    global light
+    theme_turtle._tracer(False)
+    theme_turtle.clear()
+    theme_turtle.goto(wn.window_width()/2 - 100, wn.window_height()/2 - 100)
+    theme_turtle.setheading(0)
+    length = 75
+    if dark:
+        light = False
+        theme_turtle.color('white')
+        theme_turtle.pensize(3)
+        theme_turtle.fillcolor(colors['background'])
+        theme_turtle.begin_fill()
+        for side in range(4):
+            theme_turtle.forward(length)
+            theme_turtle.left(90)
+        theme_turtle.end_fill()
+        theme_turtle.forward(length/2)
+        theme_turtle.setheading(90)
+        theme_turtle.forward(4)
+        theme_turtle.write('Dark\nMode', align='center', font=('Arial', 20, 'bold'))
+    else:
+        light = True
+        theme_turtle.color(colors['background'])
+        theme_turtle.pensize(3)
+        theme_turtle.fillcolor('white')
+        theme_turtle.begin_fill()
+        for side in range(4):
+            theme_turtle.forward(length)
+            theme_turtle.left(90)
+        theme_turtle.end_fill()
+        theme_turtle.forward(length/2)
+        theme_turtle.setheading(90)
+        theme_turtle.forward(4)
+        theme_turtle.write('Light\nMode', align='center', font=('Arial', 20, 'bold'))
+    theme_turtle.onclick(ToggleTheme)
+    theme_turtle._tracer(False)
+    theme_turtle.forward(length)
+        
+    
+def ToggleTheme(x, y):
+    global light
+    if light:
+        wn.bgcolor('white')
+        ToggleThemeBtn(dark=True)
+    else:
+        wn.bgcolor(colors['background'])
+        ToggleThemeBtn(dark=False)
+
 # Gets values of intersection and the y and x coords of the tiles and populates lists accordingly - Yuvraj
 def fetch_values():
     start_x_pos = -190
@@ -369,6 +426,7 @@ SetUp()
 # WinOrLose(True)
     
 # ----EVENTS----
+# keypresses detector - Yuvraj
 for char in string.ascii_letters:
     wn.onkeypress(lambda c = char: AppendVal(c), char)
 wn.onkeypress(lambda : SubVal(), 'BackSpace')
