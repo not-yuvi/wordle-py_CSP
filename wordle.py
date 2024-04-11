@@ -6,9 +6,6 @@
 
 
 # ---imports---
-from lib2to3.pgen2.token import SEMI
-from tkinter import CENTER
-from tkinter.font import BOLD
 import turtle as trtl
 import string
 import random
@@ -38,7 +35,7 @@ check = ['0', '0', '0', '0', '0']
 
 typing_line = 0
 
-light = None
+on_click_light = None
 y_turtles = []
 
 check_running = False
@@ -66,6 +63,14 @@ wn.register_shape(mr_Hamre_image)
 
 mr_Hamre_image_flipped = os.path.join('data', 'hamre_flipped.gif')
 wn.register_shape(mr_Hamre_image_flipped)
+
+# https://blog.almamunhossen.com/what-is-dark-mode-and-how-to-turn-it-on
+dark_img = os.path.join('data', 'dark.gif')
+wn.register_shape(dark_img)
+
+light_img = os.path.join('data', 'light.gif')
+wn.register_shape(light_img)
+# end citation
 
 # https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
 saxophone_image = os.path.join('data', 'saxophone.gif')
@@ -246,7 +251,7 @@ def SetUp():
     cursor.shape(arrow_image)
 
     for y in y_coords:
-# Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
+    # Copilot(AI)[prompt: how to make 5 new turtles variables and add them to a list?]
         new_turtle = trtl.Turtle()
         new_turtle._tracer(False)
         new_turtle.penup()
@@ -257,60 +262,30 @@ def SetUp():
         new_turtle._tracer(True)
     for turtle in y_turtles:
         turtle.hideturtle()
-# complete citation
-    theme_turtle.goto(wn.window_width()/2 - 100, wn.window_height()/2 - 100)
-    theme_turtle.shape('square')
-    theme_turtle.shapesize(4, 4)
-    ToggleThemeBtn(False)
+    # complete citation
+    theme_turtle.penup()
+    ToggleThemeBtn(True)
 
 def ToggleThemeBtn(dark):
-    global light
-    theme_turtle._tracer(False)
-    theme_turtle.clear()
+    global on_click_light
     theme_turtle.goto(wn.window_width()/2 - 100, wn.window_height()/2 - 100)
     theme_turtle.setheading(0)
-    length = 75
     if dark:
-        light = False
-        theme_turtle.color('white')
-        theme_turtle.pensize(3)
-        theme_turtle.fillcolor(colors['background'])
-        theme_turtle.begin_fill()
-        for side in range(4):
-            theme_turtle.forward(length)
-            theme_turtle.left(90)
-        theme_turtle.end_fill()
-        theme_turtle.forward(length/2)
-        theme_turtle.setheading(90)
-        theme_turtle.forward(4)
-        theme_turtle.write('Dark\nMode', align='center', font=('Arial', 20, 'bold'))
+        on_click_light = True
+        theme_turtle.shape(dark_img)
     else:
-        light = True
-        theme_turtle.color(colors['background'])
-        theme_turtle.pensize(3)
-        theme_turtle.fillcolor('white')
-        theme_turtle.begin_fill()
-        for side in range(4):
-            theme_turtle.forward(length)
-            theme_turtle.left(90)
-        theme_turtle.end_fill()
-        theme_turtle.forward(length/2)
-        theme_turtle.setheading(90)
-        theme_turtle.forward(4)
-        theme_turtle.write('Light\nMode', align='center', font=('Arial', 20, 'bold'))
-    theme_turtle.onclick(ToggleTheme)
-    theme_turtle._tracer(False)
-    theme_turtle.forward(length)
-        
+        on_click_light = False
+        theme_turtle.shape(light_img)
+    theme_turtle.onclick(lambda x,y: ToggleTheme())
     
-def ToggleTheme(x, y):
-    global light
-    if light:
+def ToggleTheme():
+    global on_click_light
+    if on_click_light:
         wn.bgcolor('white')
-        ToggleThemeBtn(dark=True)
+        ToggleThemeBtn(dark=False)
     else:
         wn.bgcolor(colors['background'])
-        ToggleThemeBtn(dark=False)
+        ToggleThemeBtn(dark=True)
 
 # Gets values of intersection and the y and x coords of the tiles and populates lists accordingly - Yuvraj
 def fetch_values():
