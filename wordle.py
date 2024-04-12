@@ -43,8 +43,8 @@ check_running = False
 # CONSTANTS
 
 colors = {
-    'background': '#121213',
-    'foreground': '#818384',
+    'background': 'black',
+    'foreground': '#121213',
     'yellow': '#b59f3b',
     'green': '#538d4e',
     'not in word': '#3a3a3c',
@@ -54,6 +54,7 @@ colors = {
 grid_drawer = trtl.Turtle()
 misc_drawer = trtl.Turtle()
 theme_turtle = trtl.Turtle()
+error_turtle = trtl.Turtle()
 
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
@@ -169,20 +170,32 @@ def CheckLetters():
     finally:
         check_running = False
 
+def Display_Error(error):
+    error_turtle.hideturtle()
+    error_turtle.clear()
+    error_turtle.penup()
+    error_turtle.color('#eb7575') # light red
+    error_turtle.goto(0, (wn.window_height()/2) - 35)
+    error_turtle.write(error, align="center", font=("Arial", 15, "normal"))
 
 # uses Dictionary API to check if the word entered by the user is a real word - Yuvraj
 def CheckIfWord(word):
-
     try:
         url = (f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
         httprequest = Request(url, headers={"Accept": "application/json"})
         with urlopen(httprequest) as response:
             if response.status == 200:
                 return True
+            elif response.status == 404:
+                Display_Error("API is down, using fallback list...")
     except HTTPError as e:
         word_list_file = open("word_list.txt", "r")
         word_list = word_list_file.readlines()
-        return (True if word.title() + "\n" in word_list else False)
+        if word.title() + "\n" in word_list:
+            return True
+        else:
+            Display_Error("That's not a Word!")
+            return False
 # complete citation
 
 # updates the line as the user enters in their guess - Yuvraj
@@ -207,6 +220,7 @@ def SubVal():
     if len(typing_list) != 0:
         typing_list.pop()
         UpdateLine()
+        error_turtle.clear()
 
 # sets up the ui before starting the game - (grid - Gavin) , (tiles - Yuvraj)
 def SetUp():
@@ -218,6 +232,7 @@ def SetUp():
     start_y_pos = -225
 
     grid_drawer.hideturtle()
+    grid_drawer.color(colors['foreground'])
     grid_drawer.speed(10)
     grid_drawer.pensize(6)
     for count in range(7):
@@ -264,11 +279,11 @@ def SetUp():
         turtle.hideturtle()
     # complete citation
     theme_turtle.penup()
-    ToggleThemeBtn(True)
+    ToggleThemeBtn(dark=True)
 
 def ToggleThemeBtn(dark):
     global on_click_light
-    theme_turtle.goto(wn.window_width()/2 - 100, wn.window_height()/2 - 100)
+    theme_turtle.goto(wn.window_width()/2 - 75, wn.window_height()/2 - 75)
     theme_turtle.setheading(0)
     if dark:
         on_click_light = True
@@ -320,7 +335,7 @@ def WinOrLose(win):
     width = 375
     corner_radius = 20
     fill_color = 'white'
-    border_color = 'black'
+    border_color = colors['background']
     misc_drawer.begin_fill()
     misc_drawer.penup()
     misc_drawer.goto(lines[4][4][0] + 75, lines[4][4][1] + 30)
