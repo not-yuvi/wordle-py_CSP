@@ -59,12 +59,6 @@ error_turtle = trtl.Turtle()
 wn = trtl.Screen()
 wn.bgcolor(colors['background'])
 
-mr_Hamre_image = os.path.join('data', 'hamre.gif')
-wn.register_shape(mr_Hamre_image)
-
-mr_Hamre_image_flipped = os.path.join('data', 'hamre_flipped.gif')
-wn.register_shape(mr_Hamre_image_flipped)
-
 # https://blog.almamunhossen.com/what-is-dark-mode-and-how-to-turn-it-on
 dark_img = os.path.join('data', 'dark.gif')
 wn.register_shape(dark_img)
@@ -73,13 +67,6 @@ light_img = os.path.join('data', 'light.gif')
 wn.register_shape(light_img)
 # end citation
 
-# https://gallery.yopriceville.com/Free-Clipart-Pictures/Music-PNG/Transparent_Saxophone_PNG_Clipart#google_vignette
-saxophone_image = os.path.join('data', 'saxophone.gif')
-wn.register_shape(saxophone_image)
-
-saxophone_flipped_image = os.path.join('data', 'saxophone_flipped.gif')
-wn.register_shape(saxophone_flipped_image)
-# complete citation
 
 # https://www.freeiconspng.com/thumbs/white-arrow-png/curved-white-arrow-png-0.png
 arrow_image = os.path.join('data', 'arrow.gif')
@@ -118,7 +105,7 @@ def StampCheck(color, index):
 
 # checks if the letters entered by the user are in the word and in the correct place
 # changes the tile colors accordingly - Gavin
-def CheckLetters():
+def CheckLetters(compare):
     global typing_line, typed_list, check_running
 
     # Check if CheckLetters is already running
@@ -157,16 +144,17 @@ def CheckLetters():
             for i in range(len(typed_list)):
                 if check[i] == "0":
                     StampCheck('0', i)
-            # checks if the user has won or lost
-            if win_check == 5:
-                WinOrLose(True)
+            if compare:
+                # checks if the user has won or lost
+                if win_check == 5:
+                    WinOrLose(True)
 
-            if typing_line == 5:
-                WinOrLose(False)
-            else:
-                typing_line += 1
-                typing_list.clear()
-                MoveCursorToLine()
+                if typing_line == 5:
+                    WinOrLose(False)
+                else:
+                    typing_line += 1
+                    typing_list.clear()
+                    MoveCursorToLine()
     finally:
         check_running = False
 
@@ -365,40 +353,6 @@ def WinOrLose(win):
         sub_final_text.penup()
         sub_final_text.goto(0, -45)
         sub_final_text.write(f'You guessed correctly in {typing_line + 1} attempts', align='center',  font = ("Consolas", 15, 'normal'))
-
-        
-        # Draw Hamre.gif files and saxophone - Gavin
-        hamre = trtl.Turtle()
-        saxophone = trtl.Turtle()
-        hamre.penup()
-        saxophone.penup()
-        hamre._tracer(False)
-        hamre.shape(mr_Hamre_image)
-        saxophone.shape(saxophone_image)
-        hamre.goto(250, 0)
-        saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
-        hamre._tracer(True)
-        while True:
-            new_loc = random.randint(-200, 200)
-            new_deg = random.randint(0, 360)
-            for num in range(3):
-                time.sleep(0.2)
-                hamre.shape(mr_Hamre_image_flipped)
-                saxophone._tracer(False)
-                saxophone.shape(saxophone_flipped_image)
-                saxophone.goto(hamre.xcor() + 100, hamre.ycor() + 15)
-                saxophone._tracer(True)
-                time.sleep(0.2)
-                hamre.shape(mr_Hamre_image)
-                saxophone._tracer(False)
-                saxophone.shape(saxophone_image)
-                saxophone.goto(hamre.xcor() - 100, hamre.ycor() + 15)
-                saxophone._tracer(True)
-            hamre.forward(new_loc)
-            hamre.setheading(new_deg)
-            hamre.clear()
-            if (-400 > hamre.xcor() > 400) or (-300 > hamre.xcor() > 300):
-                hamre.goto(250, 0)
     # Lose - Yuvraj
     else:
         final_text.color('red')
@@ -420,7 +374,7 @@ SetUp()
 for char in string.ascii_letters:
     wn.onkeypress(lambda c = char: AppendVal(c), char)
 wn.onkeypress(lambda : SubVal(), 'BackSpace')
-wn.onkeypress(lambda : CheckLetters(), 'Return')
+wn.onkeypress(lambda : CheckLetters(True), 'Return')
 wn.listen()
 
 # keep window open
