@@ -148,8 +148,7 @@ def CheckLetters(compare):
                 # checks if the user has won or lost
                 if win_check == 5:
                     WinOrLose(True)
-
-                if typing_line == 5:
+                elif typing_line == 5:
                     WinOrLose(False)
                 else:
                     typing_line += 1
@@ -189,7 +188,7 @@ def CheckIfWord(word):
 # updates the line as the user enters in their guess - Yuvraj
 def UpdateLine():
     global typing_line
-    if typing_line <=5:
+    if typing_line <= 5:
         y_turtles[typing_line]._tracer(False)
         y_turtles[typing_line].clear()
         y_turtles[typing_line].write(' '.join(typing_list), align="left",font=("Consolas", 52, "bold"))
@@ -364,7 +363,7 @@ def WinOrLose(win):
 
     
     
-choose_word()
+print(choose_word())
 fetch_values()
 SetUp()
 # WinOrLose(True)
